@@ -1,0 +1,9 @@
+{
+    "files.associations": {
+        "test01.h": "c",
+        "test03.h": "c",
+        "stdio.h": "c",
+        "calendar.h": "c",
+        "m_macrotypedef.h": "c"
+    }
+}
