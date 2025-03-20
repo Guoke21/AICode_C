@@ -1,87 +1,88 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-// #include "./Func/Inc/Module_Ctrl_Cfg.h"
 #include "./Func/Inc/Module_Ctrl_Cfg.h"
 #include "Calendar.h"
 // #include "Calculator.h"
 // #include "Game_2048.h"
 
-//main入口函数测试
+// main入口函数测试
 int main() 
 {
-#if CALENDAR_EN //日历功能
-    U16 year;
-    U8 month;
+#if CALENDAR_EN // 日历功能
+    U16 usYear;
+    U8 ucMonth;
 
     printf("请输入年份: ");
-    scanf("%hd", &year);
+    scanf("%hd", &usYear);
     printf("请输入月份: ");
-    scanf("%hhu", &month);
+    scanf("%hhu", &ucMonth);
 
-    U8 daysInMonth;
-    U8 firstDayOfWeek;
+    U8 ucDaysInMonth;
+    U8 ucFirstDayOfWeek;
 
-    daysInMonth = getDaysInMonth(year, month);
-    firstDayOfWeek = getFirstDayOfWeek(year, month);
-    printf("\n%hd年%hhu月的日历\n", year, month);
+    ucDaysInMonth = getDaysInMonth(usYear, ucMonth);
+    ucFirstDayOfWeek = getFirstDayOfWeek(usYear, ucMonth);
+    printf("\n%hd年%hhu月的日历\n", usYear, ucMonth);
     printf("日 一 二 三 四 五 六\n");
 
     // Print leading spaces for the first week
-    for (U8 i = 0; i < firstDayOfWeek; i++) {
+    for (U8 ucI = 0; ucI < ucFirstDayOfWeek; ucI++) {
         printf("   ");
     }
 
     // Print the days of the month
-    for (U8 day = 1; day <= daysInMonth; day++) {
-        printf("%02hhu ", day);
-        if ((day + firstDayOfWeek) % 7 == 0) {
+    for (U8 ucDay = 1; ucDay <= ucDaysInMonth; ucDay++) {
+        printf("%02hhu ", ucDay);
+        if ((ucDay + ucFirstDayOfWeek) % 7 == 0) {
             printf("\n");
         }
     }
     printf("\n");
-#endif//CALENDAR_EN
+#endif // CALENDAR_EN
 
-#if CALCULATOR_EN   //计算器功能
-    F64 num1, num2;
-    char operator;
-    F64 result;
+#if CALCULATOR_EN   // 计算器功能
+    F64 flNum1, flNum2;
+    char ucOperator;
+    F64 flResult;
 
     printf("Enter two numbers: ");
-    scanf("%lf %lf", &num1, &num2);
+    scanf("%lf %lf", &flNum1, &flNum2);
     printf("Enter an operator (+, -, *, /): ");
-    scanf(" %c", &operator);
+    scanf(" %c", &ucOperator);
 
-    switch (operator) {
+    switch (ucOperator) {
         case '+':
-            result = add(num1, num2);
-            printf("Result: %.2lf\n", result);
-            break;
+        {
+            flResult = add(flNum1, flNum2);
+            printf("Result: %.2lf\n", flResult);
+        }break;
         case '-':
-            result = subtract(num1, num2);
-            printf("Result: %.2lf\n", result);
-            break;
+        {
+            flResult = subtract(flNum1, flNum2);
+            printf("Result: %.2lf\n", flResult);
+        }break;
         case '*':
-            result = multiply(num1, num2);
-            printf("Result: %.2lf\n", result);
-            break;
+        {
+            flResult = multiply(flNum1, flNum2);
+            printf("Result: %.2lf\n", flResult);
+        }break;
         case '/':
-            result = divide(num1, num2);
-            printf("Result: %.2lf\n", result);
-            break;
+        {
+            flResult = divide(flNum1, flNum2);
+            printf("Result: %.2lf\n", flResult);
+        }break;
         default:
+        {
             printf("Error: Invalid operator\n");
-            break;
+        }break;
     }
-#endif//CALCULATOR_EN
+#endif // CALCULATOR_EN
 
-#if GAME_2048_EN    //2048游戏功能
+#if GAME_2048_EN    // 2048游戏功能
     srand(time(NULL)); // 初始化随机数生成器
     startGame();
-#endif//GAME_2048_EN
-
+#endif // GAME_2048_EN
 
     return 0;
 }
-
-

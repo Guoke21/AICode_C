@@ -6,7 +6,12 @@
 
 
 typedef signed int S32;
-
+/**
+ * @brief 
+ * 
+ * @param pslArray 
+ * @param slSize 
+ */
 void bubbleSort(S32 pslArray[], S32 slSize) 
 {
     S32 slOuter, slInner, slTmp;

@@ -9,7 +9,7 @@
  * 
  */
 
-#include "Game_2048.h" // 修改头文件包含名称
+#include "Game_2048.h"
 #include "m_MacroTypedef.h"
 #include <stdio.h>
 #include <stdlib.h>
@@ -17,215 +17,331 @@
 
 #define GRID_SIZE 4
 
-static U32 grid[GRID_SIZE][GRID_SIZE];
-static S8 gameOver;
+static U32 s_pulGrid[GRID_SIZE][GRID_SIZE]; // 游戏网格
+static S8 s_scGameOver;
 
-static void printGrid() {
-    for (U8 i = 0; i < GRID_SIZE; i++) {
-        for (U8 j = 0; j < GRID_SIZE; j++) {
-            printf("%5u", grid[i][j]);
+/**
+ * @brief 打印棋盘
+ * 
+ */
+static void m_PrintGrid(void) 
+{
+    for (U8 ucRow = 0; ucRow < GRID_SIZE; ucRow++) 
+    {
+        for (U8 ucCol = 0; ucCol < GRID_SIZE; ucCol++) 
+        {
+            printf("%5u", s_pulGrid[ucRow][ucCol]);
         }
         printf("\n");
     }
     printf("\n");
 }
 
-static void addNewTile() {
-    U32 emptyCells[GRID_SIZE * GRID_SIZE];
-    U8 count = 0;
+/**
+ * @brief 添加新的数字
+ * 
+ */
+static void m_AddNewTile(void) 
+{
+    U32 pulEmptyCells[GRID_SIZE * GRID_SIZE]; // 记录空位置的索引
+    U8 ucCnt = 0;
 
-    for (U8 i = 0; i < GRID_SIZE; i++) {
-        for (U8 j = 0; j < GRID_SIZE; j++) {
-            if (grid[i][j] == 0) {
-                emptyCells[count++] = i * GRID_SIZE + j;
+    for (U8 ucRow = 0; ucRow < GRID_SIZE; ucRow++) 
+    {
+        for (U8 ucCol = 0; ucCol < GRID_SIZE; ucCol++) 
+        {
+            if (s_pulGrid[ucRow][ucCol] == 0) 
+            {
+                pulEmptyCells[ucCnt++] = ucRow * GRID_SIZE + ucCol; // 记录空位置的索引
             }
         }
     }
 
-    if (count > 0) {
-        S32 randomIndex = rand() % count;
-        S32 tile = (rand() % 10) < 9 ? 2 : 4; // 90% 的几率生成2，10% 的几率生成4
-        U32 position = emptyCells[randomIndex];
-        grid[position / GRID_SIZE][position % GRID_SIZE] = tile;
+    if (ucCnt > 0) 
+    {
+        S32 slRandomIndex = rand() % ucCnt;
+        S32 slTile = (rand() % 10) < 9 ? 2 : 4; // 90% 的几率生成2，10% 的几率生成4
+        U32 ulPos = pulEmptyCells[slRandomIndex];
+
+        s_pulGrid[ulPos / GRID_SIZE][ulPos % GRID_SIZE] = slTile;
     }
 }
 
-static BOOL moveTiles(U8 direction) {
-    BOOL moved = FALSE;
-    U32 newGrid[GRID_SIZE][GRID_SIZE] = {0};
-    BOOL merged[GRID_SIZE][GRID_SIZE] = {FALSE};
+/**
+ * @brief 移动方块
+ * 
+ * @param ucDirection 移动方向
+ * @return U8 是否移动成功
+ */
+static U8 m_MoveTiles(U8 ucDirection) 
+{
+    U8 ucMoved = FALSE;
+    U32 pulNewGrid[GRID_SIZE][GRID_SIZE] = {0};
+    U8 pucMerged[GRID_SIZE][GRID_SIZE] = {FALSE};
 
-    // Copy current grid to newGrid
-    for (U8 i = 0; i < GRID_SIZE; i++) {
-        for (U8 j = 0; j < GRID_SIZE; j++) {
-            newGrid[i][j] = grid[i][j];
+    // 复制当前s_pulGrid到pulNewGrid
+    for (U8 ucRow = 0; ucRow < GRID_SIZE; ucRow++) 
+    {
+        for (U8 ucCol = 0; ucCol < GRID_SIZE; ucCol++) 
+        {
+            pulNewGrid[ucRow][ucCol] = s_pulGrid[ucRow][ucCol];
         }
     }
 
-    switch (direction) {
-        case 0: // Up
-            for (U8 x = 0; x < GRID_SIZE; x++) {
-                for (U8 y = 1; y < GRID_SIZE; y++) {
-                    if (newGrid[y][x] != 0) {
-                        for (U8 y2 = 0; y2 < y; y2++) {
-                            if (newGrid[y2][x] == 0) {
-                                newGrid[y2][x] = newGrid[y][x];
-                                newGrid[y][x] = 0;
-                                moved = TRUE;
-                            } else if (newGrid[y2][x] == newGrid[y][x] && !merged[y2][x]) {
-                                newGrid[y2][x] *= 2;
-                                newGrid[y][x] = 0;
-                                merged[y2][x] = TRUE;
-                                moved = TRUE;
+    switch (ucDirection) 
+    {
+        case 0: // 上
+        {
+            for (U8 ucCol = 0; ucCol < GRID_SIZE; ucCol++) 
+            {
+                for (U8 ucRow = 1; ucRow < GRID_SIZE; ucRow++) 
+                {
+                    if (pulNewGrid[ucRow][ucCol] != 0) 
+                    {
+                        for (U8 ucRow2 = 0; ucRow2 < ucRow; ucRow2++) 
+                        {
+                            if (pulNewGrid[ucRow2][ucCol] == 0) 
+                            {
+                                pulNewGrid[ucRow2][ucCol] = pulNewGrid[ucRow][ucCol];
+                                pulNewGrid[ucRow][ucCol] = 0;
+                                ucMoved = TRUE;
+                            } 
+                            else if ( (pulNewGrid[ucRow2][ucCol] == pulNewGrid[ucRow][ucCol]) && (!pucMerged[ucRow2][ucCol]) ) // 修改：为操作数添加括号
+                            {
+                                pulNewGrid[ucRow2][ucCol] *= 2;
+                                pulNewGrid[ucRow][ucCol] = 0;
+                                pucMerged[ucRow2][ucCol] = TRUE;
+                                ucMoved = TRUE;
                                 break;
                             }
                         }
                     }
                 }
             }
-            break;
-        case 1: // Down
-            for (U8 x = 0; x < GRID_SIZE; x++) {
-                for (S8 y = GRID_SIZE - 2; y >= 0; y--) {
-                    if (newGrid[y][x] != 0) {
-                        for (S8 y2 = GRID_SIZE - 1; y2 > y; y2--) {
-                            if (newGrid[y2][x] == 0) {
-                                newGrid[y2][x] = newGrid[y][x];
-                                newGrid[y][x] = 0;
-                                moved = TRUE;
-                            } else if (newGrid[y2][x] == newGrid[y][x] && !merged[y2][x]) {
-                                newGrid[y2][x] *= 2;
-                                newGrid[y][x] = 0;
-                                merged[y2][x] = TRUE;
-                                moved = TRUE;
+        }break;
+        case 1: // 下
+        {
+            for (U8 ucCol = 0; ucCol < GRID_SIZE; ucCol++) 
+            {
+                for (S8 ucRow = GRID_SIZE - 2; ucRow >= 0; ucRow--) 
+                {
+                    if (pulNewGrid[ucRow][ucCol] != 0) 
+                    {
+                        for (S8 ucRow2 = GRID_SIZE - 1; ucRow2 > ucRow; ucRow2--) 
+                        {
+                            if (pulNewGrid[ucRow2][ucCol] == 0) 
+                            {
+                                pulNewGrid[ucRow2][ucCol] = pulNewGrid[ucRow][ucCol];
+                                pulNewGrid[ucRow][ucCol] = 0;
+                                ucMoved = TRUE;
+                            } 
+                            else if ( (pulNewGrid[ucRow2][ucCol] == pulNewGrid[ucRow][ucCol]) && (!pucMerged[ucRow2][ucCol]) ) // 修改：为操作数添加括号
+                            {
+                                pulNewGrid[ucRow2][ucCol] *= 2;
+                                pulNewGrid[ucRow][ucCol] = 0;
+                                pucMerged[ucRow2][ucCol] = TRUE;
+                                ucMoved = TRUE;
                                 break;
                             }
                         }
                     }
                 }
             }
-            break;
-        case 2: // Left
-            for (U8 y = 0; y < GRID_SIZE; y++) {
-                for (U8 x = 1; x < GRID_SIZE; x++) {
-                    if (newGrid[y][x] != 0) {
-                        for (U8 x2 = 0; x2 < x; x2++) {
-                            if (newGrid[y][x2] == 0) {
-                                newGrid[y][x2] = newGrid[y][x];
-                                newGrid[y][x] = 0;
-                                moved = TRUE;
-                            } else if (newGrid[y][x2] == newGrid[y][x] && !merged[y][x2]) {
-                                newGrid[y][x2] *= 2;
-                                newGrid[y][x] = 0;
-                                merged[y][x2] = TRUE;
-                                moved = TRUE;
+        }break;
+        case 2: // 左
+        {
+            for (U8 ucRow = 0; ucRow < GRID_SIZE; ucRow++) 
+            {
+                for (U8 ucCol = 1; ucCol < GRID_SIZE; ucCol++) 
+                {
+                    if (pulNewGrid[ucRow][ucCol] != 0) 
+                    {
+                        for (U8 ucCol2 = 0; ucCol2 < ucCol; ucCol2++) 
+                        {
+                            if (pulNewGrid[ucRow][ucCol2] == 0) 
+                            {
+                                pulNewGrid[ucRow][ucCol2] = pulNewGrid[ucRow][ucCol];
+                                pulNewGrid[ucRow][ucCol] = 0;
+                                ucMoved = TRUE;
+                            } 
+                            else if ( (pulNewGrid[ucRow][ucCol2] == pulNewGrid[ucRow][ucCol]) && (!pucMerged[ucRow][ucCol2]) ) // 修改：为操作数添加括号
+                            {
+                                pulNewGrid[ucRow][ucCol2] *= 2;
+                                pulNewGrid[ucRow][ucCol] = 0;
+                                pucMerged[ucRow][ucCol2] = TRUE;
+                                ucMoved = TRUE;
                                 break;
                             }
                         }
                     }
                 }
             }
-            break;
-        case 3: // Right
-            for (U8 y = 0; y < GRID_SIZE; y++) {
-                for (S8 x = GRID_SIZE - 2; x >= 0; x--) {
-                    if (newGrid[y][x] != 0) {
-                        for (S8 x2 = GRID_SIZE - 1; x2 > x; x2--) {
-                            if (newGrid[y][x2] == 0) {
-                                newGrid[y][x2] = newGrid[y][x];
-                                newGrid[y][x] = 0;
-                                moved = TRUE;
-                            } else if (newGrid[y][x2] == newGrid[y][x] && !merged[y][x2]) {
-                                newGrid[y][x2] *= 2;
-                                newGrid[y][x] = 0;
-                                merged[y][x2] = TRUE;
-                                moved = TRUE;
+        }break;
+        case 3: // 右
+        {
+            for (U8 ucRow = 0; ucRow < GRID_SIZE; ucRow++) 
+            {
+                for (S8 ucCol = GRID_SIZE - 2; ucCol >= 0; ucCol--) 
+                {
+                    if (pulNewGrid[ucRow][ucCol] != 0) 
+                    {
+                        for (S8 ucCol2 = GRID_SIZE - 1; ucCol2 > ucCol; ucCol2--) 
+                        {
+                            if (pulNewGrid[ucRow][ucCol2] == 0) 
+                            {
+                                pulNewGrid[ucRow][ucCol2] = pulNewGrid[ucRow][ucCol];
+                                pulNewGrid[ucRow][ucCol] = 0;
+                                ucMoved = TRUE;
+                            } 
+                            else if ( (pulNewGrid[ucRow][ucCol2] == pulNewGrid[ucRow][ucCol]) && (!pucMerged[ucRow][ucCol2]) ) // 修改：为操作数添加括号
+                            {
+                                pulNewGrid[ucRow][ucCol2] *= 2;
+                                pulNewGrid[ucRow][ucCol] = 0;
+                                pucMerged[ucRow][ucCol2] = TRUE;
+                                ucMoved = TRUE;
                                 break;
                             }
                         }
                     }
                 }
             }
-            break;
+        }break;
         default:
-            break;
+        {
+            // 无操作
+        }break;
     }
 
-    if (moved) {
-        for (U8 i = 0; i < GRID_SIZE; i++) {
-            for (U8 j = 0; j < GRID_SIZE; j++) {
-                grid[i][j] = newGrid[i][j];
+    if (ucMoved) 
+    {
+        for (U8 ucRow = 0; ucRow < GRID_SIZE; ucRow++) 
+        {
+            for (U8 ucCol = 0; ucCol < GRID_SIZE; ucCol++) 
+            {
+                s_pulGrid[ucRow][ucCol] = pulNewGrid[ucRow][ucCol];
             }
         }
     }
 
-    return moved;
+    return ucMoved;
 }
 
-static void handleInput() {
-    char input;
+/**
+ * @brief 处理用户输入
+ * 
+ */
+static void m_HandleInput(void) 
+{
+    char cInput;
     printf("输入移动方向 (w/a/s/d) 或 q 退出: ");
-    scanf(" %c", &input);
-    switch (input) {
+    scanf(" %c", &cInput);
+    switch (cInput) 
+    {
         case 'w':
-            moveTiles(0);
-            break;
+        {
+            m_MoveTiles(0);
+        }break;
         case 'a':
-            moveTiles(2);
-            break;
+        {
+            m_MoveTiles(2);
+        }break;
         case 's':
-            moveTiles(1);
-            break;
+        {
+            m_MoveTiles(1);
+        }break;
         case 'd':
-            moveTiles(3);
-            break;
+        {
+            m_MoveTiles(3);
+        }break;
         case 'q':
-            gameOver = TRUE;
-            break;
+        {
+            s_scGameOver = TRUE;
+        }break;
         default:
-            break;
+        {
+            // 无操作
+        }break;
     }
 }
 
-static BOOL isMovePossible() {
-    for (U8 i = 0; i < GRID_SIZE; i++) {
-        for (U8 j = 0; j < GRID_SIZE; j++) {
-            if (grid[i][j] == 0) {
+/**
+ * @brief 判断是否还有移动可能
+ * 
+ * @return U8 是否还有移动可能
+ */
+static U8 m_IsMovePossible(void) 
+{
+    for (U8 ucRow = 0; ucRow < GRID_SIZE; ucRow++) 
+    {
+        for (U8 ucCol = 0; ucCol < GRID_SIZE; ucCol++) 
+        {
+            if (s_pulGrid[ucRow][ucCol] == 0) 
+            {
                 return TRUE;
             }
-            if (i > 0 && grid[i][j] == grid[i-1][j]) return TRUE;
-            if (i < GRID_SIZE-1 && grid[i][j] == grid[i+1][j]) return TRUE;
-            if (j > 0 && grid[i][j] == grid[i][j-1]) return TRUE;
-            if (j < GRID_SIZE-1 && grid[i][j] == grid[i][j+1]) return TRUE;
+            if ((ucRow > 0) && (s_pulGrid[ucRow][ucCol] == s_pulGrid[ucRow - 1][ucCol])) 
+            {
+                return TRUE;
+            }
+            if ((ucRow < (GRID_SIZE - 1)) && (s_pulGrid[ucRow][ucCol] == s_pulGrid[ucRow + 1][ucCol])) 
+            {
+                return TRUE;
+            }
+            if ((ucCol > 0) && (s_pulGrid[ucRow][ucCol] == s_pulGrid[ucRow][ucCol - 1])) 
+            {
+                return TRUE;
+            }
+            if ((ucCol < (GRID_SIZE - 1)) && (s_pulGrid[ucRow][ucCol] == s_pulGrid[ucRow][ucCol + 1])) 
+            {
+                return TRUE;
+            }
         }
     }
+    
     return FALSE;
 }
 
-void initGame() {
-    for (U8 i = 0; i < GRID_SIZE; i++) {
-        for (U8 j = 0; j < GRID_SIZE; j++) {
-            grid[i][j] = 0;
+/**
+ * @brief 初始化游戏
+ * 
+ */
+void m_InitGame(void) 
+{
+    for (U8 ucRow = 0; ucRow < GRID_SIZE; ucRow++) 
+    {
+        for (U8 ucCol = 0; ucCol < GRID_SIZE; ucCol++) 
+        {
+            s_pulGrid[ucRow][ucCol] = 0;
         }
     }
-    addNewTile();
-    addNewTile();
-    gameOver = FALSE;
+    m_AddNewTile();
+    m_AddNewTile();
+    s_scGameOver = FALSE;
 }
 
-void startGame() {
-    initGame();
-    while (!gameOver) {
-        printGrid();
-        handleInput();
-        if (!moveTiles(0) && !moveTiles(1) && !moveTiles(2) && !moveTiles(3)) {
-            if (!isMovePossible()) {
-                gameOver = TRUE;
+/**
+ * @brief 开始游戏
+ * 
+ */
+void m_StartGame(void) 
+{
+    m_InitGame();
+    while (!s_scGameOver) 
+    {
+        m_PrintGrid();
+        m_HandleInput();
+        if ( (!m_MoveTiles(0)) && (!m_MoveTiles(1)) && (!m_MoveTiles(2)) && (!m_MoveTiles(3)) ) // 修改：为操作数添加括号
+        {
+            if (!m_IsMovePossible()) 
+            {
+                s_scGameOver = TRUE;
             }
-        } else {
-            addNewTile();
+        } 
+        else 
+        {
+            m_AddNewTile();
         }
     }
     printf("游戏结束!\n");
-    printGrid();
+    m_PrintGrid();
 }
