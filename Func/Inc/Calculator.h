@@ -1,3 +1,14 @@
+/**
+ * @file Calculator.h
+ * @author your name (you@domain.com)
+ * @brief 
+ * @version 0.1
+ * @date 2025-03-20
+ * 
+ * @copyright Copyright (c) 2025
+ * 
+ */
+
 #ifndef CALCULATOR_H
 #define CALCULATOR_H
 

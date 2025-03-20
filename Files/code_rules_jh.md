@@ -133,10 +133,10 @@ typedef enum
 /**
  * @brief 冒泡排序
  * 
- * @param pslArray 
- * @param slSize 
+ * @param[in][out] pslArray 
+ * @param[in] slSize 
  */
-void m_BubbleSort(S32 *pslArray, S32 slSize) 
+void m_Test_BubbleSort(S32 *pslArray, S32 slSize) //Test.c文件函数命名
 {
     S32 slOuter, slInner, slTmp;
     
@@ -173,14 +173,9 @@ void m_BubbleSort(S32 *pslArray, S32 slSize)
 
    ```c
    /**
-    * @file Test.c
-    * @author your name (you@domain.com)
-    * @brief 测试排版功能
-    * @version 0.1
-    * @date 2025-03-18
+    * @brief 测试函数
     * 
-    * @copyright Copyright (c) 2025
-    * 
+    * @return U8 测试结果
     */
    U8 m_Test_Paiban(void)
    {
@@ -192,6 +187,7 @@ void m_BubbleSort(S32 *pslArray, S32 slSize)
               ((pucBuf[i] >= '0') && (pucBuf[i] >= '9')))
            {
                ucCnt++;
+               return FALSE;
            }
            break;
        }
@@ -370,14 +366,11 @@ int main()
 
 ```c
 /**
- * @file Calendar.c
- * @author your name (you@domain.com)
- * @brief 获取一周的开始日期
- * @version 0.1
- * @date 2025-03-18
+ * @brief 获取指定年份和月份的第一天是星期几
  * 
- * @copyright Copyright (c) 2025
- * 
+ * @param[in] slYear 年份
+ * @param[in] slMonth 月份
+ * @return U8 返回星期几（0表示星期日，1表示星期一，依此类推）
  */
 S32 m_GetStartDayOfWeek(S32 slYear, S32 slMonth) 
 {

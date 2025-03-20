@@ -1,0 +1,46 @@
+# 忽略编译生成的可执行文件
+*.exe
+*.out
+
+# 忽略编译生成的中间文件
+*.o
+*.obj
+*.a
+*.lib
+
+# 忽略调试信息文件
+*.pdb
+
+# 忽略临时文件和备份文件
+*.tmp
+*.bak
+*.swp
+
+# 忽略编译器生成的目录
+build/
+bin/
+Debug/
+Release/
+
+# 忽略特定编译器的配置文件
+*.vcxproj
+*.vcxproj.filters
+*.vcxproj.user
+*.sln
+*.suo
+
+# 忽略IDE生成的文件
+*.iml
+*.idea/
+.vscode/
+
+# 忽略日志文件
+*.log
+
+# 忽略自动生成的文档
+docs/html/
+docs/xml/
+
+# 忽略用户自定义的配置文件
+config.h.user
+

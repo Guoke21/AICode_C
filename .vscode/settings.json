@@ -4,6 +4,7 @@
         "test03.h": "c",
         "stdio.h": "c",
         "calendar.h": "c",
-        "m_macrotypedef.h": "c"
+        "m_macrotypedef.h": "c",
+        "game_2048.h": "c"
     }
 }

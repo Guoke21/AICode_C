@@ -1,10 +1,7 @@
 /**
  * @file calendar.c
  * @author John Doe (john.doe@example.com)
- * @brief 
- * 1. 获取指定年份和月份的第一天是星期几
- * 2. 获取指定年份和月份的天数
- * 3. 获取指定年份和月份的周数
+ * @brief 简单的日历功能实现
  * @version 0.1
  * @date 2025-03-18
  * 
@@ -21,7 +18,7 @@
  * @param usYear 年份
  * @return U8 返回TRUE表示是闰年，FALSE表示不是闰年
  */
-U8 isLeapYear(U16 usYear) 
+U8 m_Calendar_isLeapYear(U16 usYear)
 {
     return (usYear % 4 == 0 && usYear % 100 != 0) || (usYear % 400 == 0);
 }
@@ -33,13 +30,15 @@ U8 isLeapYear(U16 usYear)
  * @param ucMonth 月份
  * @return U8 返回该月的天数
  */
-U8 getDaysInMonth(U16 usYear, U8 ucMonth) 
+U8 m_Calendar_getDaysInMonth(U16 usYear, U8 ucMonth)
 {
     U8 pucDaysInMonth[] = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
-    if (ucMonth == 2 && isLeapYear(usYear)) 
+
+    if (ucMonth == 2 && m_Calendar_isLeapYear(usYear)) 
     {
         return 29;
     }
+
     return pucDaysInMonth[ucMonth - 1];
 }
 
@@ -50,18 +49,20 @@ U8 getDaysInMonth(U16 usYear, U8 ucMonth)
  * @param ucMonth 月份
  * @return U8 返回星期几（0表示星期日，1表示星期一，依此类推）
  */
-U8 getFirstDayOfWeek(U16 usYear, U8 ucMonth) 
+U8 m_Calendar_getFirstDayOfWeek(U16 usYear, U8 ucMonth)
 {
     U8 ucDay = 1;
     S32 slWday = 1; // 1900-01-01 是星期一
     S32 slY, slM;
+
     for (slY = 1900; slY < usYear; slY++) 
     {
-        slWday += isLeapYear(slY) ? 366 : 365;
+        slWday += m_Calendar_isLeapYear(slY) ? 366 : 365;
     }
     for (slM = 1; slM < ucMonth; slM++) 
     {
-        slWday += getDaysInMonth(usYear, slM);
+        slWday += m_Calendar_getDaysInMonth(usYear, slM);
     }
+    
     return (U8)(slWday % 7);
 }
