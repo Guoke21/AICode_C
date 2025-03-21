@@ -68,7 +68,7 @@ typedef 	double      		   F64;
 
 规范要求：
 
-1. 结构体命名加前缀ST_;
+1. 结构体命名加前缀ST_，结构体名必须大写;
 2. 应使用typedef定义结构体；
 
 ​	
@@ -197,8 +197,6 @@ void m_Test_BubbleSort(S32 *pslArray, S32 slSize) //Test.c文件函数命名
    ```
 
    
-
-
 
 ### 注释
 

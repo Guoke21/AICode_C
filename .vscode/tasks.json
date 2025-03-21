@@ -11,6 +11,7 @@
                 "D:\\AI Project\\my-Test\\test_pro_c\\Func\\Src\\Calendar.c",
                 "D:\\AI Project\\my-Test\\test_pro_c\\Func\\Src\\Calculator.c",
                 "D:\\AI Project\\my-Test\\test_pro_c\\Func\\Src\\Game_2048.c",
+                "D:\\AI Project\\my-Test\\test_pro_c\\Func\\Src\\student_management.c",
                 "-I","D:\\AI Project\\my-Test\\test_pro_c\\Func\\Inc",
                 "-o",
                 "${fileDirname}\\${fileBasenameNoExtension}.exe"

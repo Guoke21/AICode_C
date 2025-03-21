@@ -1,16 +1,91 @@
+/**
+ * @file main.c
+ * @author your name (you@domain.com)
+ * @brief 
+ * @version 0.1
+ * @date 2025-03-20
+ * 
+ * @copyright Copyright (c) 2025
+ * 
+ */
+
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <time.h>
 
 #include "./Func/Inc/Module_Ctrl_Cfg.h"
 #include "Calendar.h"
 #include "Calculator.h"
 #include "Game_2048.h"
+#include "student_management.h"
 
-// main入口函数测试
+
 int main() 
 {
+#if STUDENT_EN
+    ST_STUDENT stStudents[MAX_STUDENTS];
+    U32 ulCount = 0;
+    U8 ucChoice;
 
+    while(TRUE) 
+    {
+        printf("\n学生成绩管理系统\n");
+        printf("1. 添加学生\n");
+        printf("2. 删除学生\n");
+        printf("3. 查询学生\n");
+        printf("4. 保存数据\n");
+        printf("5. 加载数据\n");
+        printf("6. 排序学生\n");
+        printf("7. 成绩分析\n");
+        printf("0. 退出\n");
+        printf("请选择操作: ");
+        scanf("%hhu", &ucChoice);
+
+        switch(ucChoice) 
+        {
+            case 1:
+            {
+                m_AddStudent(stStudents, &ulCount);
+            }break;
+            case 2:
+            {
+                m_DeleteStudent(stStudents, &ulCount);
+            }break;
+            case 3:
+            {
+                m_QueryStudent(stStudents, ulCount);
+            }break;
+            case 4:
+            {
+                m_SaveToFile(stStudents, ulCount);
+            }break;
+            case 5:
+            {
+                m_LoadFromFile(stStudents, &ulCount);
+            }break;
+            case 6:
+            {
+                U8 ucSortBy;
+                printf("请选择排序方式 (0: 按姓名, 1: 按成绩): ");
+                scanf("%hhu", &ucSortBy);
+                m_SortStudents(stStudents, ulCount, ucSortBy);
+            }break;
+            case 7:
+            {
+                m_AnalyzeScores(stStudents, ulCount);
+            }break;
+            case 0:
+            {
+                return 0;
+            }break;
+            default:
+            {
+                printf("无效的选择！\n");
+            }break;
+        }
+    }
+#endif // STUDENT_EN
 
 #if CALENDAR_EN // 日历功能
     U16 usYear;
@@ -91,4 +166,3 @@ int main()
 
     return 0;
 }
-

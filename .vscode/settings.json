@@ -5,6 +5,7 @@
         "stdio.h": "c",
         "calendar.h": "c",
         "m_macrotypedef.h": "c",
-        "game_2048.h": "c"
+        "game_2048.h": "c",
+        "student.h": "c"
     }
 }
